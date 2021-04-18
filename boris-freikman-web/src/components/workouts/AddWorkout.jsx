@@ -1,11 +1,12 @@
-import { Button, Divider } from '@material-ui/core';
+import { Button, Divider, Typography } from '@material-ui/core';
 import { Field, FieldArray, Form, Formik } from 'formik';
-import React from 'react';
+import React, {useState} from 'react';
 import * as Yup from 'yup';
 import AddWorkoutAddAthletes from './AddWorkoutAddAthletes';
 import AddWorkoutAddExercises from './AddWorkoutAddExercises';
 import AddWorkoutDateTimePicker from './AddWorkoutDateTimePicker';
 import AdminService from '../../services/admin.service';
+import AlertSnackbar from '../AlertSnackbar';
 
 const initialValues = {
   dateAndTime: new Date(),
@@ -53,18 +54,23 @@ const addWorkoutValidationSchema = Yup.object().shape({
   exercises: exercisesValidationSchema,
 });
 
-const handleSubmit = (values) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 8));
-    }, 500);
-    AdminService.addWorkout(values);
-}
 
 function AddWorkout() {
+  const [alertSnackbar, setAlertSnackbar] = useState({type: "", message: ""});
 
+  const handleSubmit = async (values) => {
+    try {
+      const response = await AdminService.addWorkout(values);
+      setAlertSnackbar({type: "success", message: response.data.message});
+    } catch (error) {
+      setAlertSnackbar({type: "error", message: error.response.data.message || error.toString()});
+    }
+  }
   return (
     <div>
-        <h1>Create A New Workout</h1>
+        <Typography variant="h2">
+          Create A New Workout
+        </Typography>
         <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
@@ -86,6 +92,7 @@ function AddWorkout() {
           )}} 
         </Formik>
         
+        <AlertSnackbar type={alertSnackbar.type} message={alertSnackbar.message}/>
     </div>
   );
 }

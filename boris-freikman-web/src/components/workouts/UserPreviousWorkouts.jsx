@@ -8,10 +8,15 @@ function UserPreviousWorkouts() {
   const [workouts, setWorkouts] = useState();
 
   const fetchAllPreviousWorkouts = useCallback(async () => {
-    const currentUser = await AuthService.getCurrentUser();
-    const workouts = await UserService.getUserPreviousWorkouts(currentUser._id);
-    if(workouts.length > 0){
-        setWorkouts(workouts);
+    try {
+      const currentUser = await AuthService.getCurrentUser();
+      const response = await UserService.getUserPreviousWorkouts(currentUser._id);
+      let workouts = response.data.workouts;
+      if(workouts.length > 0){
+          setWorkouts(workouts);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, []);
 

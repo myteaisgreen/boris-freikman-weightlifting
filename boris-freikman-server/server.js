@@ -41,7 +41,7 @@ db.mongoose
   })
   .then(() => {
     console.log(
-      `#################################\n✌️Successfully connected to MongoDB.\n#################################`
+      `##################################\n✌️Successfully connected to MongoDB.\n##################################`
       );
     initializeRoles();
   })

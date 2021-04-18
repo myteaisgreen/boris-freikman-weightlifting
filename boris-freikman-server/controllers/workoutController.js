@@ -54,7 +54,6 @@ exports.addWorkout = (req, res) => {
       });
 
       res.status(200).send({
-        workout: workout,
         message: "Workout was added successfully!",
       });
     });
@@ -157,8 +156,6 @@ exports.getUserWorkoutById = (req, res) => {
   })
 };
 
-
-
 exports.getUserCurrentWorkout = (req, res) => {
   User.findById({
     _id: req.body._id || req.query._id
@@ -178,7 +175,7 @@ exports.getUserCurrentWorkout = (req, res) => {
     }
 
     if(user.workouts.length < 1) {
-      return res.status(404).send({message: "No active workout"});
+      return res.status(200).send({message: "No active workout"});
     }
 
     let userNextWorkout = service.getNextUserWorkout(user.workouts);

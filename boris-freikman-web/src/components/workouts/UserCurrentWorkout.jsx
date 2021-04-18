@@ -23,10 +23,16 @@ function UserCurrentWorkout() {
   };
 
   const fetchWorkout = useCallback(async () => {
-    const currentUser = await AuthService.getCurrentUser();
-    const workout = await UserService.getUserCurrentWorkout(currentUser._id);
-    setWorkout(workout);
-    setWhen(workout.dateAndTime);
+    try {
+      const currentUser = await AuthService.getCurrentUser();
+      const response = await UserService.getUserCurrentWorkout(currentUser._id);
+      if(response.data.workout){
+        setWorkout(response.data.workout);
+        setWhen(response.datatworkout.dateAndTime);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   useEffect(() => {
@@ -35,13 +41,16 @@ function UserCurrentWorkout() {
 
   return (
     <div>
-      <h1>When?</h1>
-      <h3>{dateAndTime}</h3>
-      <h1>What?</h1>
-      <ol>
-        {workout && workout.exercises && <WorkoutExercises exercises={workout.exercises}/>}
-      </ol>
-
+      {workout ? 
+      <div>
+        <h1>When?</h1>
+        <h3>{dateAndTime}</h3>
+        <h1>What?</h1>
+        <ol>
+          {workout && workout.exercises && <WorkoutExercises exercises={workout.exercises}/>}
+        </ol>
+      </div> 
+      : <h1>There is no current workout</h1>}
     </div>
   );
 }

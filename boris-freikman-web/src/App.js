@@ -10,7 +10,6 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
-import Register from "./components/Register";
 import AuthService from "./services/auth.service";
 import theme from "./themes/index";
 
@@ -39,34 +38,30 @@ class App extends Component {
 
   logOut() {
     AuthService.logout();
+    window.location.replace("http://localhost:8081/");
   }
 
   render() {
-    const { currentUser, showAdminBoard } = this.state;
-
     return (
-      <div>
+      <ThemeProvider theme={theme}>
         <Router>
-          <ThemeProvider theme={theme}>
-            <Navbar
-              showAdminBoard={this.state.showAdminBoard}
-              isLoggedIn={this.state.currentUser}
-              logoutHandler={this.logOut}
-            />
-            <Grid container justify="center" alignItems="center">
-              <Switch>
-                <Route exact path={["/", "/home"]} component={Home} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/forgotPassword" component={ForgotPassword}/>
-                <Route exact path="/register" component={Register} />
-                <Route exact path="/profile" component={Profile} />
-                <Route path="/user" component={UserBoard} />
-                <Route path="/admin" component={AdminBoard} />
-              </Switch>
-            </Grid>
-          </ThemeProvider>
+          <Navbar
+            showAdminBoard={this.state.showAdminBoard}
+            currentUser={this.state.currentUser}
+            logoutHandler={this.logOut}
+          />
+          <Grid container justify="center" alignItems="center">
+            <Switch>
+              <Route exact path={["/", "/home"]} component={Home} />
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/forgotPassword" component={ForgotPassword} />
+              <Route exact path="/profile" component={Profile} />
+              <Route path="/user" component={UserBoard} />
+              <Route path="/admin" component={AdminBoard} />
+            </Switch>
+          </Grid>
         </Router>
-      </div>
+      </ThemeProvider>
     );
   }
 }

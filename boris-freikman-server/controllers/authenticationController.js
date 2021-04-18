@@ -8,62 +8,6 @@ const Workout = db.workout;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
-exports.signup = (req, res) => {
-  const user = new User({
-    username: req.body.username,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    weight: req.body.weight,
-    snatchRecord: req.body.snatchRecord,
-    cleanJerkRecord: req.body.cleanJerkRecord,
-  });
-
-  user.save((err, user) => {
-    if (err) {
-      return res.status(500).send({ message: err });
-    }
-
-    if (req.body.roles) {
-      Role.find(
-        {
-          name: { $in: req.body.roles },
-        },
-        (err, roles) => {
-          if (err) {
-            return res.status(500).send({ message: err });
-          }
-
-          user.roles = roles.map((role) => role._id);
-          user.save((err) => {
-            if (err) {
-              return res.status(500).send({ message: err });
-            }
-
-            res.send({ message: "User was registered successfully!" });
-          });
-        }
-      );
-    } else {
-      Role.findOne({ name: "user" }, (err, role) => {
-        if (err) {
-          return res.status(500).send({ message: err });
-        }
-
-        user.roles = [role._id];
-        user.save((err) => {
-          if (err) {
-            return res.status(500).send({ message: err });
-          }
-
-          res.send({ message: "User was registered successfully!" });
-        });
-      });
-    }
-  });
-};
-
 exports.signin = (req, res) => {
   User.findOne({
     username: req.body.username,

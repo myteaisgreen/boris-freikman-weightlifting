@@ -21,12 +21,11 @@ exports.addExercise = (req, res) => {
   
       newExercise.save((err, exercise) => {
         if (err) {
-          return res.status(500).send({ message: err});
+          return res.status(500).send({ message: err });
         }
   
         res.status(200).send({
-          exercise: exercise,
-          message: "Exercise was added successfully!",
+          message: `Exercise ${exercise.name} was added successfully!`
         });
       });
     });

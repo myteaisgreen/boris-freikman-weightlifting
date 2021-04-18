@@ -2,6 +2,65 @@ const config = require("../config/jwtSecret");
 const db = require("../models");
 var bcrypt = require("bcryptjs");
 const User = db.user;
+const Role = db.role;
+
+var bcrypt = require("bcryptjs");
+
+exports.registerNewUser = (req, res) => {
+  const user = new User({
+    username: req.body.username,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 8),
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    weight: req.body.weight,
+    snatchRecord: req.body.snatchRecord,
+    cleanJerkRecord: req.body.cleanJerkRecord,
+  });
+
+  user.save((err, user) => {
+    if (err) {
+      return res.status(500).send({ message: err });
+    }
+
+    if (req.body.roles) {
+      Role.find(
+        {
+          name: { $in: req.body.roles },
+        },
+        (err, roles) => {
+          if (err) {
+            return res.status(500).send({ message: err });
+          }
+
+          user.roles = roles.map((role) => role._id);
+          user.save((err) => {
+            if (err) {
+              return res.status(500).send({ message: err });
+            }
+
+            res.send({ message: `User ${user.firstName} ${user.lastName} was successfully registered!` });
+          });
+        }
+      );
+    } else {
+      Role.findOne({ name: "user" }, (err, role) => {
+        if (err) {
+          return res.status(500).send({ message: err });
+        }
+
+        user.roles = [role._id];
+        user.save((err) => {
+          if (err) {
+            return res.status(500).send({ message: err });
+          }
+
+          res.send({ message: `User ${user.firstName} ${user.lastName} was successfully registered!` });
+        });
+      });
+    }
+  });
+};
 
 exports.getUserById = (req, res) => {
     User.findOne({
@@ -33,7 +92,7 @@ exports.getUserById = (req, res) => {
   
       if (users) {
         users = users.filter((user => user.roles && user.roles.length < 2));
-        res.status(200).send({
+        return res.status(200).send({
           users: users, message: "These are all the users!"
         });
       }
@@ -69,7 +128,7 @@ exports.getUserById = (req, res) => {
             return res.status(500).send({ message: err});
           }
   
-          res.status(200).send({message: `User ${user.firstName} ${user.lastName} was edited!`, user: user})
+          res.status(200).send({message: `User ${user.firstName} ${user.lastName} was successfully edited!`})
         })
     });
   }

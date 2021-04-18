@@ -1,3 +1,4 @@
+import { Grid, Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import { FieldArray } from 'formik';
 import React from "react";
@@ -8,9 +9,11 @@ import PercentageOfExerciseSelector from "./PercentageOfExerciseSelector";
 function PickExerciseAndSets({form, indexInExercises, exercisesToChooseFrom}) {
   return (
     <div>
-      <h5>Sets List</h5>
+      <Typography variant="h5">
+        Sets list
+      </Typography>
       <div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <Grid container direction="row">
           <ExerciseSelector
             name={`exercises[${indexInExercises}].exercise`}
             value={form.values.exercises[indexInExercises].exercise}
@@ -22,6 +25,7 @@ function PickExerciseAndSets({form, indexInExercises, exercisesToChooseFrom}) {
             value={form.values.exercises[indexInExercises].percentageOfExercise}
             onChange={form.handleChange}
           />
+        </Grid>
           <FieldArray 
             name={`exercises[${indexInExercises}].sets`} 
             component={AddSets}
@@ -33,7 +37,6 @@ function PickExerciseAndSets({form, indexInExercises, exercisesToChooseFrom}) {
             value={form.values.exercises[indexInExercises].notes}
             onChange={form.handleChange}
           />
-        </div>
       </div>
     </div>
   );

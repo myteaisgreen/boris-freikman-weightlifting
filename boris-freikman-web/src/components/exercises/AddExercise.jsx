@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import React, { useCallback, useState } from "react";
 import * as yup from "yup";
 import AdminService from "../../services/admin.service";
+import AlertSnackbar from "../AlertSnackbar";
 
 const validationSchema = yup.object({
   name: yup
@@ -16,6 +17,7 @@ const validationSchema = yup.object({
 
 function AddExercise() {
   const [isSubmittingNewExercise, setIsSubmittingNewExercise] = useState(false); // TODO: Use for conditional rendering
+  const [alertSnackbar, setAlertSnackbar] = useState({type: "", message: ""});
 
   const formik = useFormik({
     initialValues: {
@@ -30,12 +32,16 @@ function AddExercise() {
 
   const submitNewExercise = useCallback(async () => {
     setIsSubmittingNewExercise(true);
-    const response = await AdminService.addExercise(
-      formik.values.name,
-      formik.values.description
-    );
-    formik.resetForm();
-    alert(JSON.stringify(response, null, 2));
+    try {
+      const response = await AdminService.addExercise(
+        formik.values.name,
+        formik.values.description
+      );
+      formik.resetForm();
+      setAlertSnackbar({type: "success", message: response.data.message});
+    } catch(error) {
+      setAlertSnackbar({type: "error", message: error.response.data.message || error.toString()});
+    }
     setIsSubmittingNewExercise(false);
   }, [formik.values, isSubmittingNewExercise]);
 
@@ -79,6 +85,7 @@ function AddExercise() {
             Submit New Exercise
           </Button>
         )}
+        <AlertSnackbar type={alertSnackbar.type} message={alertSnackbar.message}/>
       </form>
     </div>
   );

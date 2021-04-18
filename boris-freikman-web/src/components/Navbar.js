@@ -5,76 +5,61 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
   },
   title: {
     flexGrow: 1,
   },
 }));
 
-export default function ButtonAppBar(props) {
+export default function ButtonAppBar({
+  showAdminBoard,
+  currentUser,
+  logoutHandler,
+}) {
+  const [isLoggedIn, setIsLoggedIn] = useState(currentUser);
+  const [showAdminBoardLink, setShowAdminBoardLink] = useState(showAdminBoard);
   const classes = useStyles();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(props.isLoggedIn);
-  const [showAdminBoard, setShowAdminBoard] = useState(props.showAdminBoard);
-  const logoutHandler = props.logoutHandler;
-
   useEffect(() => {
-    setIsLoggedIn(props.isLoggedIn);
-    setShowAdminBoard(props.showAdminBoard);
-  }, [props.isLoggedIn, props.showAdminBoard]);
+    setIsLoggedIn(currentUser);
+    setShowAdminBoardLink(showAdminBoard);
+  }, [currentUser, showAdminBoard]);
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton> */}
-
+          <FitnessCenterIcon/>
           <Typography variant="h6" className={classes.title}>
             BORIS FREIKMAN
           </Typography>
-          {/* ------------------------------------------------ */}
-          <Link to={"/home"}>
-            <Button color="inherit">Home</Button>
-          </Link>
-
+          <Button component={Link} to={"/home"} color="inherit">
+            Home
+          </Button>
           {isLoggedIn ? (
             <div>
-              {showAdminBoard ? (
-                <Link to={"/admin"}>
-                  <Button color="inherit">Admin</Button>
-                </Link>
-              ) : (
-                <Link to={"/user"}>
-                  <Button color="inherit">User</Button>
-                </Link>
-              )}
-
-              {/* <Link to={"/login"}> */}
-              <a href="/login">
-                <Button onClick={logoutHandler} color="inherit">
-                  Log Out
+              {showAdminBoardLink ? (
+                <Button component={Link} to={"/admin"} color="inherit">
+                  Admin
                 </Button>
-              </a>
-              {/* </Link> */}
+              ) : (
+                <Button component={Link} to={"/user"} color="inherit">
+                  User
+                </Button>
+              )}
+              <Button onClick={logoutHandler} color="inherit">
+                Log Out
+              </Button>
             </div>
           ) : (
-            <div>
-              <Link to={"/login"}>
-                <Button color="inherit">Login</Button>
-              </Link>
-              <Link to={"/register"}>
-                <Button color="inherit">Sign Up</Button>
-              </Link>
-            </div>
+            <Button component={Link} to={"/login"} color="inherit">
+              Login
+            </Button>
           )}
         </Toolbar>
       </AppBar>

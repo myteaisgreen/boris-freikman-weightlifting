@@ -5,7 +5,8 @@ import SendIcon from "@material-ui/icons/Send";
 import { useFormik } from "formik";
 import React, { useCallback, useState } from "react";
 import * as yup from "yup";
-import AuthService from "../services/auth.service";
+import AdminService from "../services/admin.service";
+import AlertSnackbar from "./AlertSnackbar";
 
 const validationSchema = yup.object({
   username: yup.string("Enter username").required("Required"),
@@ -45,6 +46,7 @@ const validationSchema = yup.object({
 
 function RegisterProfile() {
   const [isRegisteringProfile, setIsRegisteringProfile] = useState(false); // TODO: Use for conditional rendering
+  const [alertSnackbar, setAlertSnackbar] = useState({type: "", message: ""});
   
   const formik = useFormik({
     initialValues: {
@@ -65,18 +67,13 @@ function RegisterProfile() {
 
   const registerProfile = useCallback(async () => {
     setIsRegisteringProfile(true);
-    const response = await AuthService.register(
-        formik.values.username,
-        formik.values.email,
-        formik.values.password,
-        formik.values.firstName,
-        formik.values.lastName,
-        formik.values.weight,
-        formik.values.snatchRecord, 
-        formik.values.cleanJerkRecord
-        );
-    formik.resetForm(); // TODO: Leave? Remove?
-    alert(JSON.stringify(response, null, 2));
+    try {
+      const response = await AdminService.registerNewUser({...formik.values});
+      formik.resetForm(); 
+      setAlertSnackbar({type: "success", message: response.data.message});
+    } catch(error) {
+      setAlertSnackbar({type: "error", message: error.response.data.message || error.toString()});
+    }
     setIsRegisteringProfile(false);
   }, [formik, isRegisteringProfile]);
 
@@ -195,6 +192,7 @@ function RegisterProfile() {
             Register Profile
           </Button>
         )}
+        <AlertSnackbar type={alertSnackbar.type} message={alertSnackbar.message}/>
       </form>
     </div>
   );

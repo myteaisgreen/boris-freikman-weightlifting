@@ -10,7 +10,7 @@ Verify JWT
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
-
+  
   if (!token) {
     // If there is no token at all
     return res.status(403).send({ message: "No token provided!" });

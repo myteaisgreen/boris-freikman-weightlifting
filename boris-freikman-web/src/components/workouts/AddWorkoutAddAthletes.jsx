@@ -1,3 +1,4 @@
+import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
@@ -8,7 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import { ErrorMessage } from 'formik';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminService from '../../services/admin.service';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,14 +40,17 @@ export default function AddWorkoutAddAthletes({form: {setFieldValue, setFieldTou
   const [left, setLeft] = useState([]); // For athletes NOT to be signed to the workout
   const [right, setRight] = useState([]);
   
-  const fetchAthletes = useCallback(async () => {
-    const usersForAdminBoard = await AdminService.getAllUsersForAdminBoard();
-    setLeft(usersForAdminBoard);
-  }, []);
-
   useEffect(() => {
+    async function fetchAthletes() {
+      try {
+        const response = await AdminService.getAllUsersForAdminBoard();
+        setLeft(response.data.users);
+      } catch (error) {
+        console.log(error);
+      }
+    }
     fetchAthletes();
-  }, [fetchAthletes]);
+  }, []);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -131,7 +135,9 @@ export default function AddWorkoutAddAthletes({form: {setFieldValue, setFieldTou
 
   return (
     <div>
-        <h3>Pick the athletes:</h3>
+        <Typography variant="h4">
+          Pick the athletes:
+        </Typography>
         <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
           <Grid item>{customList(left)}</Grid>
           <Grid item>

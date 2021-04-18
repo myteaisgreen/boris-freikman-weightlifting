@@ -17,18 +17,11 @@ class UserService {
   }
 
   getUserCurrentWorkout(id) {
-    return axios
-      .get(API_URL + "getUserCurrentWorkout", { params: { _id: id } })
-      .then((response) => {
-        return response.data.workout;
-      });
+    return axios.get(API_URL + "getUserCurrentWorkout", { headers: authHeader(), params: { _id: id } });
   }
 
   getUserPreviousWorkouts(id) {
-    return axios.get(API_URL + "getUserPreviousWorkouts", { params: { _id: id } })
-    .then((response) => {
-      return response.data.workouts;
-    });
+    return axios.get(API_URL + "getUserPreviousWorkouts", { headers: authHeader(), params: { _id: id } });
   }
 }
 

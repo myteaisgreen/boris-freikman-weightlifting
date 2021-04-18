@@ -6,49 +6,40 @@ import React, { useEffect, useState } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import AuthService from "../../services/auth.service";
 import UserService from "../../services/user.service";
-import UserCurrentWorkout from "../workouts/UserCurrentWorkout";
 import EditProfile from "../EditProfile";
 import Profile from "../Profile";
+import UserCurrentWorkout from "../workouts/UserCurrentWorkout";
 import UserPreviousWorkouts from "../workouts/UserPreviousWorkouts";
+import SelectMenu from "./SelectMenu";
+import RegularMenu from "./RegularMenu";
 
 function UserBoard() {
-  const [content, setContent] = useState("");
   const currentUser = AuthService.getCurrentUser();
-
-  useEffect(() => {
-    UserService.getUserBoard().then(
-      (response) => {
-        setContent(response.data);
-      },
-      (error) => {
-        console.log("ERROR" + error.toString());
-        setContent({
-          content:
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString(),
-        });
-      }
-    );
-  });
-
+  const menuOptions = [
+    {
+      label: "Profile",
+      link: "/user/profile",
+    },
+    {
+      label: "Current Workout",
+      link: "/user/currentWorkout",
+    },
+    {
+      label: "Previous Workouts",
+      link: "/user/previousWorkouts",
+    },
+  ];
   return (
     <div>
-      <h1>{content}</h1>
-      <Grid container component="main" direction="row" spacing={2}>
+      <Grid container component="main" direction="row">
+      <Hidden mdUp>
+          <Grid item xs={12}>
+            <SelectMenu menuOptions={menuOptions}/>
+          </Grid>
+        </Hidden>
         <Hidden smDown>
-          <Grid item xs={false} sm={3} md={3} component={Paper}>
-            <Button component={Link} to={'/user/profile'} variant="outlined" fullWidth>
-              <h3>Profile</h3>
-            </Button>
-            <Button component={Link} to={'/user/currentWorkout'} variant="outlined" color="primary" fullWidth>
-              <h3>Current Workout</h3>
-            </Button>
-            <Button component={Link} to={'/user/previousWorkouts'} variant="outlined" color="primary" fullWidth>
-              <h3>Previous Workouts</h3>
-            </Button>
+          <Grid item xs={0} sm={0} md={3} component={Paper}>
+            <RegularMenu menuOptions={menuOptions}/>
           </Grid>
         </Hidden>
         <Grid item xs={12} sm={9} md={9} component={Paper}>

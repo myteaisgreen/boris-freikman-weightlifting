@@ -1,4 +1,5 @@
-const { verifyWorkout } = require("../middlewares");
+const { verifyWorkout, authenticateJwt } = require("../middlewares");
+
 const controller = require("../../controllers/workoutController");
 
 module.exports = function (app) {
@@ -13,32 +14,32 @@ module.exports = function (app) {
   // GET
 
   app.get(
-    "/api/getAllActiveWorkouts",
+    "/api/getAllActiveWorkouts", [authenticateJwt.verifyToken, authenticateJwt.isAdmin],
     controller.getAllActiveWorkouts,
   );
 
   app.get(
-    "/api/getAllPreviousWorkouts", 
+    "/api/getAllPreviousWorkouts", [authenticateJwt.verifyToken, authenticateJwt.isAdmin],
     controller.getAllPreviousWorkouts,
   );
 
   app.get(
-    "/api/getAdminWorkoutById",
+    "/api/getAdminWorkoutById", [authenticateJwt.verifyToken, authenticateJwt.isAdmin],
     controller.getAdminWorkoutById,
   );
 
   app.get(
-    "/api/getUserWorkoutById",
+    "/api/getUserWorkoutById", [authenticateJwt.verifyToken],
     controller.getUserWorkoutById
   );
 
   app.get(
-    "/api/getUserCurrentWorkout",
+    "/api/getUserCurrentWorkout", [authenticateJwt.verifyToken],
     controller.getUserCurrentWorkout
   );
 
   app.get(
-    "/api/getUserPreviousWorkouts",
+    "/api/getUserPreviousWorkouts", [authenticateJwt.verifyToken],
     controller.getUserPreviousWorkouts
   );
 
@@ -46,7 +47,7 @@ module.exports = function (app) {
 
   app.post(
     "/api/addWorkout",
-    [verifyWorkout.verifyAthletesExist, verifyWorkout.verifyExercisesExist],
+    [authenticateJwt.verifyToken, authenticateJwt.isAdmin], [verifyWorkout.verifyAthletesExist, verifyWorkout.verifyExercisesExist],
     controller.addWorkout,
   );
 

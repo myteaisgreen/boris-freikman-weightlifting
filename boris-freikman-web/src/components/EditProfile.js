@@ -1,4 +1,4 @@
-import { CircularProgress, Divider } from "@material-ui/core";
+import { CircularProgress, Divider} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import SendIcon from "@material-ui/icons/Send";
@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import React, { useCallback, useState } from "react";
 import * as yup from "yup";
 import AdminService from "../services/admin.service";
+import AlertSnackbar from "./AlertSnackbar";
 
 const validationSchema = yup.object({
   username: yup.string("Enter username").required("Required"),
@@ -40,7 +41,8 @@ const validationSchema = yup.object({
 
 function EditProfile({user}) {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false); // TODO: Use for conditional rendering
-  
+  const [alertSnackbar, setAlertSnackbar] = useState({type: "", message: ""});
+
   const formik = useFormik({
     initialValues: {
       username: user.username || "",
@@ -59,10 +61,12 @@ function EditProfile({user}) {
 
   const updateProfile = useCallback(async () => {
     setIsUpdatingProfile(true);
-    // alert(JSON.stringify({_id: user._id, ...formik.values}, null, 2)); // TODO: REMOVE
-    const response = await AdminService.updateUserById({...formik.values, _id: user._id});
-    formik.resetForm(); // TODO: Leave? Remove?
-    alert(JSON.stringify(response, null, 2));
+    try {
+      const response = await AdminService.updateUserById({...formik.values, _id: user._id});
+      setAlertSnackbar({type: "success", message: response.data.message});
+    } catch(error) {
+      setAlertSnackbar({type: "error", message: error.response.data.message || error.toString()});
+    }
     setIsUpdatingProfile(false);
   }, [formik.values, isUpdatingProfile, user]);
 
@@ -70,6 +74,16 @@ function EditProfile({user}) {
     <div>
       <form onSubmit={formik.handleSubmit}>
         <h1>Edit Profile</h1>
+        <TextField
+          fullWidth
+          id="username"
+          name="username"
+          label="Username"
+          value={formik.values.username}
+          onChange={formik.handleChange}
+          error={formik.touched.username && Boolean(formik.errors.username)}
+          helperText={formik.touched.username && formik.errors.username}
+        />
         <TextField
           fullWidth
           id="email"
@@ -159,6 +173,7 @@ function EditProfile({user}) {
             Update Profile
           </Button>
         )}
+        <AlertSnackbar type={alertSnackbar.type} message={alertSnackbar.message}/>
       </form>
     </div>
   );

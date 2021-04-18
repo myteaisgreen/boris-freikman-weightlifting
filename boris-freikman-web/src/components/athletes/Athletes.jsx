@@ -1,23 +1,26 @@
 import { Divider, TextField } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminService from "../../services/admin.service";
 import AthletesListItem from "./AthletesListItem";
 
 function Athletes() {
-  const [athletes, setAthletes] = useState("");
+  const [athletes, setAthletes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const fetchAthletes = useCallback(async () => {
-    const usersForAdminBoard = await AdminService.getAllUsersForAdminBoard();
-    setAthletes(usersForAdminBoard);
-  }, []);
-
+  
   useEffect(() => {
+    async function fetchAthletes() {
+      try {
+        const response = await AdminService.getAllUsersForAdminBoard();
+        setAthletes(response.data.users);
+      } catch (error) {
+        console.log(error);
+      }
+    }
     fetchAthletes();
-  }, [fetchAthletes]);
+  }, []);
 
   return (
     <div>
@@ -29,10 +32,9 @@ function Athletes() {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
       <Divider />
-      <ul>
+      <ul style={{"list-style-type": "none"}}>
         {!searchQuery &&
-          athletes &&
-          athletes.map((athlete, index) => (
+          athletes?.map((athlete, index) => (
             <AthletesListItem
               firstName={athlete.firstName}
               lastName={athlete.lastName}
@@ -44,9 +46,7 @@ function Athletes() {
             />
           ))}
         {searchQuery &&
-          athletes &&
-          athletes
-            .filter(
+          athletes?.filter(
               (athlete) =>
                 athlete.firstName.includes(searchQuery) ||
                 athlete.lastName.includes(searchQuery)

@@ -22,19 +22,6 @@ class AuthService {
     localStorage.removeItem("user");
   }
 
-  register(username, email, password, firstName, lastName, weight, snatchRecord, cleanJerkRecord) {
-    return axios.post(API_URL + "signup", {
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-      weight,
-      snatchRecord,
-      cleanJerkRecord
-    });
-  }
-
   getCurrentUser() {
     return JSON.parse(localStorage.getItem('user'));;
   }
